@@ -28,7 +28,7 @@ cnx = mysql.connector.connect(
   database="power"
 )
 
-
+# Set to 1 if you do not want to save the information to a DB and only want to test!!!!!
 No_DB_Output_Print_Data = 1
 res = ''
 
