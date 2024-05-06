@@ -29,7 +29,7 @@ cnx = mysql.connector.connect(
 )
 
 
-n = 40
+No_DB_Output_Print_Data = 1
 res = ''
 
 # Create an infinite loop, after some testing, the program does not consume much CPU cycles and the loop does 
@@ -118,34 +118,32 @@ while True:
   # Battery Discharge
   # Get size of response, must be 47
   size = sys.getsizeof(bat_discharge)
-  #print("response size:", size)
-  #print("line voltage after hexlify:", load_active_power_va)
   if size == 47:
     # Remove the last 2 blocks of data whilst in HEX
     bat_discharge = bat_discharge[:-4]
     # Remove the first 3 blocks of data whilst in HEX
     res = bat_discharge[6:]
     # Convert the remaining HEX to DECIMAL
-    #output = binascii.hexlify(bytearray(res))
     # Convert the decimal number to int
     decimal_output = int(res,16)
-    #print("line voltage hex:", res)
-    #print("line voltage:", decimal_output)
     # Get the current timestamp
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     calculated = float(decimal_output)
     value = str(calculated)
-    if cnx and cnx.is_connected():
-      with cnx.cursor() as cursor:
-        query ="INSERT INTO power.ups (date,type,value) VALUES ('"+ now +"','bat_discharge','"+ value +"')"
-        result = cursor.execute(query)
-        cnx.commit()
-        rows = cursor.fetchall()
-        for rows in rows:
-          print(rows)
-  #    cnx.close()
+    if No_DB_Output_Print_Data == 1:
+      print('Battery Discharge Total:', value)
     else:
-      print("Could not connect")
+      if cnx and cnx.is_connected():
+        with cnx.cursor() as cursor:
+          query ="INSERT INTO power.ups (date,type,value) VALUES ('"+ now +"','bat_discharge','"+ value +"')"
+          result = cursor.execute(query)
+          cnx.commit()
+          rows = cursor.fetchall()
+          for rows in rows:
+            print(rows)
+  
+      else:
+        print("Could not connect")
   else:
     print("number of bytes do not match")
     
@@ -153,39 +151,35 @@ while True:
   # BAT charge
   # Get size of response, must be 47
   size = sys.getsizeof(bat_charge)
-  #print("response size:", size)
-  #print("line voltage after hexlify:", load_active_power_va)
   if size == 47:
     # Remove the last 2 blocks of data whilst in HEX
     bat_charge = bat_charge[:-4]
     # Remove the first 3 blocks of data whilst in HEX
     res = bat_charge[6:]
     # Convert the remaining HEX to DECIMAL
-    #output = binascii.hexlify(bytearray(res))
     # Convert the decimal number to int
     decimal_output = int(res,16)
-    #print("line voltage hex:", res)
-    #print("line voltage:", decimal_output)
     # Get the current timestamp
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     calculated = float(decimal_output)
     value = str(calculated)
-    if cnx and cnx.is_connected():
-      with cnx.cursor() as cursor:
-        query ="INSERT INTO power.ups (date,type,value) VALUES ('"+ now +"','bat_charge','"+ value +"')"
-        result = cursor.execute(query)
-        cnx.commit()
-        rows = cursor.fetchall()
-        for rows in rows:
-          print(rows)
-  #    cnx.close()
+    if No_DB_Output_Print_Data == 1:
+      print('Battery Charge Total:', value)
     else:
-      print("Could not connect")
+      if cnx and cnx.is_connected():
+        with cnx.cursor() as cursor:
+          query ="INSERT INTO power.ups (date,type,value) VALUES ('"+ now +"','bat_charge','"+ value +"')"
+          result = cursor.execute(query)
+          cnx.commit()
+          rows = cursor.fetchall()
+          for rows in rows:
+            print(rows)
+  
+      else:
+        print("Could not connect")
   else:
     print("number of bytes do not match")
     
-
-
 
   #Battery Amps
   # Get size of response, must be 47
@@ -196,7 +190,6 @@ while True:
     # Remove the first 3 blocks of data whilst in HEX
     res = bat_amps[6:]
     # Convert the remaining HEX to DECIMAL
-    #output = binascii.hexlify(bytearray(res))
     # Convert the decimal number to int
     decimal_output = int(res,16)
     # Get the current timestamp
@@ -209,17 +202,20 @@ while True:
     if decimal_output > 11000:
       calculated = float((decimal_output-65535)/10)
       value = str(calculated)
-      if cnx and cnx.is_connected():
-        with cnx.cursor() as cursor:
-          query ="INSERT INTO power.ups (date,type,value) VALUES ('"+ now +"','battery_current','"+ value +"')"
-          result = cursor.execute(query)
-          cnx.commit()
-          rows = cursor.fetchall()
-          for rows in rows:
-            print(rows)
-    #    cnx.close()
+      if No_DB_Output_Print_Data == 1:
+        print('Battery Amps:', value)
       else:
-        print("Could not connect")
+        if cnx and cnx.is_connected():
+          with cnx.cursor() as cursor:
+            query ="INSERT INTO power.ups (date,type,value) VALUES ('"+ now +"','battery_current','"+ value +"')"
+            result = cursor.execute(query)
+            cnx.commit()
+            rows = cursor.fetchall()
+            for rows in rows:
+              print(rows)
+    
+        else:
+          print("Could not connect")
     else:
       calculated = float(decimal_output/10)
       value = str(calculated)
@@ -243,7 +239,6 @@ while True:
     # Remove the first 3 blocks of data whilst in HEX
     res = bat_volts[6:]
     # Convert the remaining HEX to DECIMAL
-    #output = binascii.hexlify(bytearray(res))
     # Convert the decimal number to int
     decimal_output = int(res,16)
     #print("bat volts:", decimal_output)
@@ -251,24 +246,27 @@ while True:
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     calculated = float(decimal_output/10)
     value = str(calculated)
-    if cnx and cnx.is_connected():
-      with cnx.cursor() as cursor:
-        query ="INSERT INTO power.ups (date,type,value) VALUES ('"+ now +"','battery_voltage','"+ value +"')"
-        result = cursor.execute(query)
-        cnx.commit()
-        rows = cursor.fetchall()
-        for rows in rows:
-          print(rows)
-  #    cnx.close()
+    if No_DB_Output_Print_Data == 1:
+      print('Battery Volts:', value)
     else:
-      print("Could not connect")
+      if cnx and cnx.is_connected():
+        with cnx.cursor() as cursor:
+          query ="INSERT INTO power.ups (date,type,value) VALUES ('"+ now +"','battery_voltage','"+ value +"')"
+          result = cursor.execute(query)
+          cnx.commit()
+          rows = cursor.fetchall()
+          for rows in rows:
+            print(rows)
+  
+      else:
+        print("Could not connect")
   else:
     print("number of bytes do not match")
 
   # Main Voltage
   # Get size of response, must be 47
   size = sys.getsizeof(line_voltage)
-  #print("response size:", size)
+  
   #print("line voltage after hexlify:", line_voltage)
   if size == 47:
     # Remove the last 2 blocks of data whilst in HEX
@@ -276,33 +274,33 @@ while True:
     # Remove the first 3 blocks of data whilst in HEX
     res = line_voltage[6:]
     # Convert the remaining HEX to DECIMAL
-    #output = binascii.hexlify(bytearray(res))
     # Convert the decimal number to int
     decimal_output = int(res,16)
-    #print("line voltage hex:", res)
-    #print("line voltage:", decimal_output)
     # Get the current timestamp
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     calculated = float(decimal_output/10)
     value = str(calculated)
-    if cnx and cnx.is_connected():
-      with cnx.cursor() as cursor:
-        query ="INSERT INTO power.ups (date,type,value) VALUES ('"+ now +"','line_voltage','"+ value +"')"
-        result = cursor.execute(query)
-        cnx.commit()
-        rows = cursor.fetchall()
-        for rows in rows:
-          print(rows)
-  #    cnx.close()
+    if No_DB_Output_Print_Data == 1:
+      print('Line Voltage:', value)
     else:
-      print("Could not connect")
+      if cnx and cnx.is_connected():
+        with cnx.cursor() as cursor:
+          query ="INSERT INTO power.ups (date,type,value) VALUES ('"+ now +"','line_voltage','"+ value +"')"
+          result = cursor.execute(query)
+          cnx.commit()
+          rows = cursor.fetchall()
+          for rows in rows:
+            print(rows)
+  
+      else:
+        print("Could not connect")
   else:
     print("number of bytes do not match")
 
   # Load Active Power Watts
   # Get size of response, must be 47
   size = sys.getsizeof(load_active_power)
-  #print("response size:", size)
+  
   #print("line voltage after hexlify:", load_active_power)
   if size == 47:
     # Remove the last 2 blocks of data whilst in HEX
@@ -310,67 +308,67 @@ while True:
     # Remove the first 3 blocks of data whilst in HEX
     res = load_active_power[6:]
     # Convert the remaining HEX to DECIMAL
-    #output = binascii.hexlify(bytearray(res))
     # Convert the decimal number to int
     decimal_output = int(res,16)
-    #print("line voltage hex:", res)
-    #print("line voltage:", decimal_output)
     # Get the current timestamp
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     calculated = float(decimal_output)
     value = str(calculated)
-    if cnx and cnx.is_connected():
-      with cnx.cursor() as cursor:
-        query ="INSERT INTO power.ups (date,type,value) VALUES ('"+ now +"','load_power','"+ value +"')"
-        result = cursor.execute(query)
-        cnx.commit()
-        rows = cursor.fetchall()
-        for rows in rows:
-          print(rows)
-  #    cnx.close()
+    if No_DB_Output_Print_Data == 1:
+      print('Load Active Power Watts:', value)
     else:
-      print("Could not connect")
+      if cnx and cnx.is_connected():
+        with cnx.cursor() as cursor:
+          query ="INSERT INTO power.ups (date,type,value) VALUES ('"+ now +"','load_power','"+ value +"')"
+          result = cursor.execute(query)
+          cnx.commit()
+          rows = cursor.fetchall()
+          for rows in rows:
+            print(rows)
+  
+      else:
+        print("Could not connect")
   else:
     print("number of bytes do not match")
 
   # Load Power VA
   # Get size of response, must be 47
   size = sys.getsizeof(load_active_power_va)
-  #print("response size:", size)
-  #print("line voltage after hexlify:", load_active_power_va)
+  
+  
   if size == 47:
     # Remove the last 2 blocks of data whilst in HEX
     load_active_power_va = load_active_power_va[:-4]
     # Remove the first 3 blocks of data whilst in HEX
     res = load_active_power_va[6:]
     # Convert the remaining HEX to DECIMAL
-    #output = binascii.hexlify(bytearray(res))
     # Convert the decimal number to int
     decimal_output = int(res,16)
-    #print("line voltage hex:", res)
-    #print("line voltage:", decimal_output)
     # Get the current timestamp
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     calculated = float(decimal_output)
     value = str(calculated)
-    if cnx and cnx.is_connected():
-      with cnx.cursor() as cursor:
-        query ="INSERT INTO power.ups (date,type,value) VALUES ('"+ now +"','load_power_va','"+ value +"')"
-        result = cursor.execute(query)
-        cnx.commit()
-        rows = cursor.fetchall()
-        for rows in rows:
-          print(rows)
-  #    cnx.close()
+    if No_DB_Output_Print_Data == 1:
+      print('Load Active Power VA:', value)
     else:
-      print("Could not connect")
+      if cnx and cnx.is_connected():
+        with cnx.cursor() as cursor:
+          query ="INSERT INTO power.ups (date,type,value) VALUES ('"+ now +"','load_power_va','"+ value +"')"
+          result = cursor.execute(query)
+          cnx.commit()
+          rows = cursor.fetchall()
+          for rows in rows:
+            print(rows)
+  
+      else:
+        print("Could not connect")
   else:
     print("number of bytes do not match")
     
   # Temp DC
   # Get size of response, must be 47
   size = sys.getsizeof(temp_dc)
-  #print("response size:", size)
+  
   #print("line voltage after hexlify:", temp_dc)
   if size == 47:
     # Remove the last 2 blocks of data whilst in HEX
@@ -378,33 +376,33 @@ while True:
     # Remove the first 3 blocks of data whilst in HEX
     res = temp_dc[6:]
     # Convert the remaining HEX to DECIMAL
-    #output = binascii.hexlify(bytearray(res))
     # Convert the decimal number to int
     decimal_output = int(res,16)
-    #print("line voltage hex:", res)
-    #print("line voltage:", decimal_output)
     # Get the current timestamp
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     calculated = float(decimal_output/10)
     value = str(calculated)
-    if cnx and cnx.is_connected():
-      with cnx.cursor() as cursor:
-        query ="INSERT INTO power.ups (date,type,value) VALUES ('"+ now +"','temp_dc','"+ value +"')"
-        result = cursor.execute(query)
-        cnx.commit()
-        rows = cursor.fetchall()
-        for rows in rows:
-          print(rows)
-  #   cnx.close()
+    if No_DB_Output_Print_Data == 1:
+      print('Temperature DC:', value)
     else:
-      print("Could not connect")
+      if cnx and cnx.is_connected():
+        with cnx.cursor() as cursor:
+          query ="INSERT INTO power.ups (date,type,value) VALUES ('"+ now +"','temp_dc','"+ value +"')"
+          result = cursor.execute(query)
+          cnx.commit()
+          rows = cursor.fetchall()
+          for rows in rows:
+            print(rows)
+  #   cnx.close()
+      else:
+        print("Could not connect")
   else:
     print("number of bytes do not match")
     
   # Temp AC
   # Get size of response, must be 47
   size = sys.getsizeof(temp_ac)
-  #print("response size:", size)
+  
   #print("line voltage after hexlify:", temp_ac)
   if size == 47:
     # Remove the last 2 blocks of data whilst in HEX
@@ -412,26 +410,26 @@ while True:
     # Remove the first 3 blocks of data whilst in HEX
     res = temp_ac[6:]
     # Convert the remaining HEX to DECIMAL
-    #output = binascii.hexlify(bytearray(res))
     # Convert the decimal number to int
     decimal_output = int(res,16)
-    #print("line voltage hex:", res)
-    #print("line voltage:", decimal_output)
     # Get the current timestamp
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     calculated = float(decimal_output/10)
     value = str(calculated)
-    if cnx and cnx.is_connected():
-      with cnx.cursor() as cursor:
-        query ="INSERT INTO power.ups (date,type,value) VALUES ('"+ now +"','temp_ac','"+ value +"')"
-        result = cursor.execute(query)
-        cnx.commit()
-        rows = cursor.fetchall()
-        for rows in rows:
-          print(rows)
-  #    cnx.close()
+    if No_DB_Output_Print_Data == 1:
+      print('Temperature AC:', value)
     else:
-      print("Could not connect")
+      if cnx and cnx.is_connected():
+        with cnx.cursor() as cursor:
+          query ="INSERT INTO power.ups (date,type,value) VALUES ('"+ now +"','temp_ac','"+ value +"')"
+          result = cursor.execute(query)
+          cnx.commit()
+          rows = cursor.fetchall()
+          for rows in rows:
+            print(rows)
+  
+      else:
+        print("Could not connect")
   else:
     print("number of bytes do not match")
     
@@ -439,7 +437,7 @@ while True:
   # Temp TR
   # Get size of response, must be 47
   size = sys.getsizeof(temp_tr)
-  #print("response size:", size)
+  
   #print("line voltage after hexlify:", temp_tr)
   if size == 47:
     # Remove the last 2 blocks of data whilst in HEX
@@ -447,26 +445,26 @@ while True:
     # Remove the first 3 blocks of data whilst in HEX
     res = temp_tr[6:]
     # Convert the remaining HEX to DECIMAL
-    #output = binascii.hexlify(bytearray(res))
     # Convert the decimal number to int
     decimal_output = int(res,16)
-    #print("line voltage hex:", res)
-    #print("line voltage:", decimal_output)
     # Get the current timestamp
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     calculated = float(decimal_output/10)
     value = str(calculated)
-    if cnx and cnx.is_connected():
-      with cnx.cursor() as cursor:
-        query ="INSERT INTO power.ups (date,type,value) VALUES ('"+ now +"','temp_tr','"+ value +"')"
-        result = cursor.execute(query)
-        cnx.commit()
-        rows = cursor.fetchall()
-        for rows in rows:
-          print(rows)
-  #    cnx.close()
+    if No_DB_Output_Print_Data == 1:
+      print('Temperature TR:', value)
     else:
-      print("Could not connect")
+      if cnx and cnx.is_connected():
+        with cnx.cursor() as cursor:
+          query ="INSERT INTO power.ups (date,type,value) VALUES ('"+ now +"','temp_tr','"+ value +"')"
+          result = cursor.execute(query)
+          cnx.commit()
+          rows = cursor.fetchall()
+          for rows in rows:
+            print(rows)
+  
+      else:
+        print("Could not connect")
   else:
     print("number of bytes do not match")
     
@@ -474,7 +472,7 @@ while True:
   # Load Total
   # Get size of response, must be 47
   size = sys.getsizeof(load_total)
-  #print("response size:", size)
+  
   #print("line voltage after hexlify:", load_total)
   if size == 47:
     # Remove the last 2 blocks of data whilst in HEX
@@ -482,26 +480,26 @@ while True:
     # Remove the first 3 blocks of data whilst in HEX
     res = load_total[6:]
     # Convert the remaining HEX to DECIMAL
-    #output = binascii.hexlify(bytearray(res))
     # Convert the decimal number to int
     decimal_output = int(res,16)
-    #print("line voltage hex:", res)
-    #print("line voltage:", decimal_output)
     # Get the current timestamp
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     calculated = float(decimal_output)
     value = str(calculated)
-    if cnx and cnx.is_connected():
-      with cnx.cursor() as cursor:
-        query ="INSERT INTO power.ups (date,type,value) VALUES ('"+ now +"','load_consum_total','"+ value +"')"
-        result = cursor.execute(query)
-        cnx.commit()
-        rows = cursor.fetchall()
-        for rows in rows:
-          print(rows)
-  #   cnx.close()
+    if No_DB_Output_Print_Data == 1:
+      print('Load Consumed Total:', value)
     else:
-      print("Could not connect")
+      if cnx and cnx.is_connected():
+        with cnx.cursor() as cursor:
+          query ="INSERT INTO power.ups (date,type,value) VALUES ('"+ now +"','load_consum_total','"+ value +"')"
+          result = cursor.execute(query)
+          cnx.commit()
+          rows = cursor.fetchall()
+          for rows in rows:
+            print(rows)
+  #   cnx.close()
+      else:
+        print("Could not connect")
   else:
     print("number of bytes do not match") 
 
@@ -509,7 +507,7 @@ while True:
   # Load Total Today
   # Get size of response, must be 47
   size = sys.getsizeof(load_today)
-  #print("response size:", size)
+  
   #print("line voltage after hexlify:", load_today)
   if size == 47:
     # Remove the last 2 blocks of data whilst in HEX
@@ -517,33 +515,33 @@ while True:
     # Remove the first 3 blocks of data whilst in HEX
     res = load_today[6:]
     # Convert the remaining HEX to DECIMAL
-    #output = binascii.hexlify(bytearray(res))
     # Convert the decimal number to int
     decimal_output = int(res,16)
-    #print("line voltage hex:", res)
-    #print("line voltage:", decimal_output)
     # Get the current timestamp
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     calculated = float(decimal_output/10)
     value = str(calculated)
-    if cnx and cnx.is_connected():
-      with cnx.cursor() as cursor:
-        query ="INSERT INTO power.ups (date,type,value) VALUES ('"+ now +"','load_consum_today','"+ value +"')"
-        result = cursor.execute(query)
-        cnx.commit()
-        rows = cursor.fetchall()
-        for rows in rows:
-          print(rows)
-  #    cnx.close()
+    if No_DB_Output_Print_Data == 1:
+      print('Load Today Total:', value)
     else:
-      print("Could not connect")
+      if cnx and cnx.is_connected():
+        with cnx.cursor() as cursor:
+          query ="INSERT INTO power.ups (date,type,value) VALUES ('"+ now +"','load_consum_today','"+ value +"')"
+          result = cursor.execute(query)
+          cnx.commit()
+          rows = cursor.fetchall()
+          for rows in rows:
+            print(rows)
+  
+      else:
+        print("Could not connect")
   else:
     print("number of bytes do not match")
 
   # Line Current
   # Get size of response, must be 47
   size = sys.getsizeof(line_current)
-  #print("response size:", size)
+  
   #print("line voltage after hexlify:", line_current)
   if size == 47:
     # Remove the last 2 blocks of data whilst in HEX
@@ -551,25 +549,29 @@ while True:
     # Remove the first 3 blocks of data whilst in HEX
     res = line_current[6:]
     # Convert the remaining HEX to DECIMAL
-    #output = binascii.hexlify(bytearray(res))
     # Convert the decimal number to int
     decimal_output = int(res,16)
-    #print("line voltage hex:", res)
-    #print("line voltage:", decimal_output)
     # Get the current timestamp
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     calculated = float(decimal_output/10)
     value = str(calculated)
-    if cnx and cnx.is_connected():
-      with cnx.cursor() as cursor:
-        query ="INSERT INTO power.ups (date,type,value) VALUES ('"+ now +"','line_current','"+ value +"')"
-        result = cursor.execute(query)
-        cnx.commit()
-        rows = cursor.fetchall()
-        for rows in rows:
-          print(rows)
- #     cnx.close()
+    
+    if No_DB_Output_Print_Data == 1:
+      print('Line Current:', value)
     else:
-      print("Could not connect")
+      if cnx and cnx.is_connected():
+        with cnx.cursor() as cursor:
+          query ="INSERT INTO power.ups (date,type,value) VALUES ('"+ now +"','line_current','"+ value +"')"
+          result = cursor.execute(query)
+          cnx.commit()
+          rows = cursor.fetchall()
+          for rows in rows:
+              print(rows)
+ #         cnx.close()
+      else:
+        print("Could not connect")
   else:
     print("number of bytes do not match")
+    
+
+    
