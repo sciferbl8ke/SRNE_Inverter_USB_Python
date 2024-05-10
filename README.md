@@ -49,5 +49,10 @@ To use:
 
 If you enabled debug you will see the values from the device every 4-5 seconds.
 
+Cron / Service
+I Use non-systemd Linux and therefor I have just started it via /etc/rc.local and send it to the background however you are free to create this as a service or startup script.  
+For Cron, you may want to remove the loop and run at intervals that you want to use.  I predicted the timing in the loop based on the number of queries x delay time to keep it at about 5 seconds.
+
+
 
 
