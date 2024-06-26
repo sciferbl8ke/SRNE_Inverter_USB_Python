@@ -8,6 +8,20 @@ Welcome to the SRNE Inverter Linux Python script
 
 Sometimes things on GIT is tricky, and I will try to aid where I can however if you want to run this, please feel free however you might want to get familiar with installing and configuring Grafana and MySQL on Linux.  The install for debian systems are pretty easy, visit the GRafana website and follow the instructions on how to add the APT repo, or compile from source if you are adventurous.
 
+Installation - Debian based
+Install Python3 virtual environment python3-binascii
+
+apt install python3-venv
+
+Create virtual environment
+python3 -m -venv /home/myusername/python
+
+Navigate to that directory and run
+./pip3 install pyserial
+./pip3 install mysql-connector-python
+
+This should allow you to run the script.
+
 Introduction / Back Story
 
 Like most of you here, you need an alternative to reading data from SRNE Inverters and want to save that information somewhere to keep track of everything.  There is commercial software available to use, however you need special hardware etc.  This is a simple script in Python 3 to read that data from the device. 
